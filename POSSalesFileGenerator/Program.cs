@@ -75,10 +75,6 @@ namespace POSSalesFileGenerator
 
                 var ordercountpercall = 0;
 
-               
-
-                
-                
                 //remove double refund
                 var refundDeducted = orderRefunds
                        .Where(r => !orders.Items.Any(o => o.OrderNumber == r.OrderNumber))
