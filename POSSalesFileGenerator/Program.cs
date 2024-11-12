@@ -13,8 +13,8 @@ namespace POSSalesFileGenerator
         private static DateTime customdate = new DateTime(2024, 02, 01);
         private static DateTime customdate2 = customdate.AddHours(23).AddMinutes(59).AddSeconds(59);
         private static DateTime currentDateTime = DateTime.Now.Date;
-        private static DateTime previousDateTime2 = DateTime.Now.Date.AddDays(-25).AddHours(23).AddMinutes(59).AddSeconds(59);
-        private static DateTime previousDateTime = DateTime.Now.Date.AddDays(-25);
+        private static DateTime previousDateTime2 = DateTime.Now.Date.AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+        private static DateTime previousDateTime = DateTime.Now.Date.AddDays(-1);
         private static string machineId = "17000013";
         private static string batchId;
 
@@ -179,8 +179,8 @@ namespace POSSalesFileGenerator
                 receiptCount = 0;
                 Refunded = 0;
 
-                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
-                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
+                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
+                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
                 string fileName = $"H{machineId}_{previousDateTime.ToString("yyyyMMdd")}.txt";
                 string filePath = Path.Combine(directoryPath, fileName);
                 using (StreamWriter writer = new StreamWriter(filePath, true))
@@ -214,8 +214,8 @@ namespace POSSalesFileGenerator
 
         static async Task<string> GetAndUpdateBatchId()
         {
-            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
-            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
+            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
+            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
             string batchId;
             int newBatchId;
 
