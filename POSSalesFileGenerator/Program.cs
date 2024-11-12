@@ -29,11 +29,14 @@ namespace POSSalesFileGenerator
             Console.WriteLine(formattedDate);
 
             Console.WriteLine("Connecting to Shopify Store");
-             var shopService = new ShopService("clearlab-pos.myshopify.com", "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");
+            var securityKey = Environment.GetEnvironmentVariable("SECURITY_KEY_POS");
+            Console.WriteLine("This is the security key :  " + securityKey);
+
+            var shopService = new ShopService("clearlab-pos.myshopify.com", securityKey);
             Console.WriteLine("Succesfully Connected to : " + shopService);
 
             Console.WriteLine("Getting Orders from the store ...");
-            var orderService = new OrderService("clearlab-pos.myshopify.com", "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");
+            var orderService = new OrderService("clearlab-pos.myshopify.com", securityKey);
 
             // Get refunds for the specified date range
             var orderRefunds = await GetRefunds(orderService);
@@ -179,8 +182,8 @@ namespace POSSalesFileGenerator
                 receiptCount = 0;
                 Refunded = 0;
 
-                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
-                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
+                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
+                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
                 string fileName = $"H{machineId}_{previousDateTime.ToString("yyyyMMdd")}.txt";
                 string filePath = Path.Combine(directoryPath, fileName);
                 using (StreamWriter writer = new StreamWriter(filePath, true))
@@ -214,8 +217,8 @@ namespace POSSalesFileGenerator
 
         static async Task<string> GetAndUpdateBatchId()
         {
-            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
-            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
+            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
+            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
             string batchId;
             int newBatchId;
 
