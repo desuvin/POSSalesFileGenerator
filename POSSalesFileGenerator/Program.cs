@@ -182,8 +182,8 @@ namespace POSSalesFileGenerator
                 receiptCount = 0;
                 Refunded = 0;
 
-                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
-                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
+                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
+                string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
                 string fileName = $"H{machineId}_{previousDateTime.ToString("yyyyMMdd")}.txt";
                 string filePath = Path.Combine(directoryPath, fileName);
                 using (StreamWriter writer = new StreamWriter(filePath, true))
@@ -217,8 +217,8 @@ namespace POSSalesFileGenerator
 
         static async Task<string> GetAndUpdateBatchId()
         {
-            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
-            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
+            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
+            string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
             string batchId;
             int newBatchId;
 
