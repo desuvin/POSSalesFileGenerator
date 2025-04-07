@@ -29,11 +29,14 @@ namespace POSSalesFileGenerator
             Console.WriteLine(formattedDate);
 
             Console.WriteLine("Connecting to Shopify Store");
-             var shopService = new ShopService("clearlab-pos.myshopify.com", "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");
+            var securityKey = Environment.GetEnvironmentVariable("SECURITY_KEY_POS");
+            Console.WriteLine("This is the security key :  " + securityKey);
+
+            var shopService = new ShopService("clearlab-pos.myshopify.com", securityKey);
             Console.WriteLine("Succesfully Connected to : " + shopService);
 
             Console.WriteLine("Getting Orders from the store ...");
-            var orderService = new OrderService("clearlab-pos.myshopify.com", "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");
+            var orderService = new OrderService("clearlab-pos.myshopify.com", securityKey);
 
             // Get refunds for the specified date range
             var orderRefunds = await GetRefunds(orderService);
@@ -72,10 +75,19 @@ namespace POSSalesFileGenerator
                 decimal Refunded = 0;
 
                 var orders = await orderService.ListAsync(filter);
+
                 var ordercountpercall = 0;
 
+                //remove double refund
+                var refundDeducted = orderRefunds
+                       .Where(r => !orders.Items.Any(o => o.OrderNumber == r.OrderNumber))
+                       .ToList();
                 int RefundedCount = orderRefunds.Where(r => r.UpdatedAt.Value.ToString("HH") == hour).Count();
+<<<<<<< HEAD
                 Refunded += orderRefunds.Where(r => r.UpdatedAt.Value.ToString("HH") == hour).Sum(r => r.Refunds.Sum(refund => refund.Transactions.Sum(transaction => transaction.Amount.Value)));
+=======
+                Refunded += refundDeducted.Where(r => r.UpdatedAt.Value.ToString("HH") == hour).Sum(r => r.Refunds.Sum(refund => refund.Transactions.Sum(transaction => transaction.Amount.Value)));
+>>>>>>> 9baca645f2e570c94121197ad9e3b8e1aebcbbef
                 //Console.WriteLine("Refunded Amount : ", Refunded);
                
                 foreach (var orderitem in orders.Items)
@@ -94,6 +106,7 @@ namespace POSSalesFileGenerator
                         receiptCount++;
                         decimal CurrentSubTotalPrice = orderitem.CurrentSubtotalPrice.Value;
                         decimal CurrentTotalTax = orderitem.CurrentTotalTax.Value;
+<<<<<<< HEAD
                         double eyeexam_cost = 27.52;
                         double eyeexam_tax = 2.48;
                         if (count_eyeexam > 0)
@@ -103,6 +116,20 @@ namespace POSSalesFileGenerator
 
                             CurrentSubTotalPrice -= (decimal)eyeexam_cost;
                             CurrentTotalTax -= (decimal)eyeexam_tax;
+=======
+                        double eyeexam_cost = 30.00;
+                        double eyeexam_tax = 2.48;
+                        if (count_eyeexam > 0)
+                        {
+                            Console.WriteLine("CurrentSubTotalPrice" + CurrentSubTotalPrice);
+                            double c_eyeexam_cost = eyeexam_cost * count_eyeexam;
+                            double c_eyeexam_tax = eyeexam_tax * count_eyeexam;
+
+                            CurrentSubTotalPrice -= (decimal)c_eyeexam_cost;
+                            CurrentTotalTax -= (decimal)c_eyeexam_tax;
+
+                            Console.WriteLine("After Deduction CurrentSubTotalPrice" + CurrentSubTotalPrice);
+>>>>>>> 9baca645f2e570c94121197ad9e3b8e1aebcbbef
                         }
                         if (orderitem.TotalShippingPriceSet.ShopMoney.Amount > 0)
                         {
@@ -144,6 +171,11 @@ namespace POSSalesFileGenerator
                 {
                     Console.WriteLine(Refunded);
                     GTO -= Refunded;
+                }
+
+                if (RefundedCount > 0)
+                {
+                    Console.WriteLine("Refunded Count : "+RefundedCount);
                     receiptCount += RefundedCount;
                 }
 
@@ -166,6 +198,7 @@ namespace POSSalesFileGenerator
                 receiptCount = 0;
                 Refunded = 0;
 
+                //string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\Test";
                 string directoryPath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\SalesFiles";
                 string fileName = $"H{machineId}_{previousDateTime.ToString("yyyyMMdd")}.txt";
                 string filePath = Path.Combine(directoryPath, fileName);
@@ -191,7 +224,7 @@ namespace POSSalesFileGenerator
             var orderRefunds = await orderService.ListAsync(refundfilter);
             foreach (var orderitem in orderRefunds.Items)
             {
-                Console.WriteLine(orderitem.Name);
+                //Console.WriteLine(orderitem.Name);
                 allRefunds.Add(orderitem);
             }
 
@@ -200,6 +233,7 @@ namespace POSSalesFileGenerator
 
         static async Task<string> GetAndUpdateBatchId()
         {
+            //string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchIDTest.txt";
             string batchIdFilePath = @"C:\Users\robby\Desktop\POSSALESINTEGRATION\BatchID.txt";
             string batchId;
             int newBatchId;
