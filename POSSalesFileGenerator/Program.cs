@@ -76,15 +76,41 @@ namespace POSSalesFileGenerator
 
                 int RefundedCount = orderRefunds.Where(r => r.UpdatedAt.Value.ToString("HH") == hour).Count();
                 Refunded += orderRefunds.Where(r => r.UpdatedAt.Value.ToString("HH") == hour).Sum(r => r.Refunds.Sum(refund => refund.Transactions.Sum(transaction => transaction.Amount.Value)));
-                Console.WriteLine("Refunded Amount : ", Refunded);
-
+                //Console.WriteLine("Refunded Amount : ", Refunded);
+               
                 foreach (var orderitem in orders.Items)
                 {
-
+                    int count_eyeexam = 0;
+                    //Console.WriteLine("EYE EXAM START : " + count_eyeexam);
+                    foreach (var item in orderitem.LineItems)
+                    {
+                        if (item.SKU == "8122")
+                        {
+                            count_eyeexam++;
+                        }
+                    }
                     if (hour == orderitem.CreatedAt.Value.ToString("HH"))
                     {
                         receiptCount++;
-                        decimal subGTO = orderitem.CurrentSubtotalPrice.Value - orderitem.CurrentTotalTax.Value;
+                        decimal CurrentSubTotalPrice = orderitem.CurrentSubtotalPrice.Value;
+                        decimal CurrentTotalTax = orderitem.CurrentTotalTax.Value;
+                        double eyeexam_cost = 27.52;
+                        double eyeexam_tax = 2.48;
+                        if (count_eyeexam > 0)
+                        {
+                            eyeexam_cost = eyeexam_cost * count_eyeexam;
+                            eyeexam_tax = eyeexam_tax * count_eyeexam;
+
+                            CurrentSubTotalPrice -= (decimal)eyeexam_cost;
+                            CurrentTotalTax -= (decimal)eyeexam_tax;
+                        }
+                        if (orderitem.TotalShippingPriceSet.ShopMoney.Amount > 0)
+                        {
+                            CurrentSubTotalPrice -= (decimal)5;
+                        }
+                        decimal subGTO = CurrentSubTotalPrice - CurrentTotalTax;
+                        Console.WriteLine("Order NUmber : " + orderitem.Name + " Order GTO : " + subGTO);
+                        //decimal subGTO = orderitem.CurrentSubtotalPrice.Value - orderitem.CurrentTotalTax.Value;
                         GTO += subGTO;
                         GST += orderitem.CurrentTotalTax.Value;
                         Discount += orderitem.TotalDiscounts.Value;
@@ -111,6 +137,7 @@ namespace POSSalesFileGenerator
 
                     ordercountpercall++;
                     LineNumber += 1000;
+                    //Console.WriteLine("EYE EXAM END : " + count_eyeexam);
                 }
 
                 if (Refunded > 0)
@@ -120,8 +147,8 @@ namespace POSSalesFileGenerator
                     receiptCount += RefundedCount;
                 }
 
-                var gtostring = GTO.ToString("0.00");
-                var gststring = GST.ToString("0.00");
+                var gtostring = GTO.ToString("0.00"); // need to deduct the eye checkup 27.52
+                var gststring = GST.ToString("0.00"); // need to remove the eye checkup tax 2.48
                 var discountstring = Discount.ToString("0.00");
                 var servicechargestring = ServiceCharge.ToString("0.00");
                 var cashstring = Cash.ToString("0.00");
@@ -131,7 +158,7 @@ namespace POSSalesFileGenerator
                 var amexstring = Amex.ToString("0.00");
                 var voucherstring = Voucher.ToString("0.00");
                 var othersstring = Others.ToString("0.00");
-
+                //17000013 | 225 | 15082024 | 15 | 2 | 222.94 | 20.06 | 18.00 | 0.00 | 0 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 222.94 | Y
                 var rowstring = string.Join("|", machineId, batchId, previousDateTime.ToString("ddMMyyyy").ToUpper(), hour, receiptCount, gtostring, gststring, discountstring,
                     servicechargestring, NoOfPax, cashstring, netsstring, visastring, mastercardstring, amexstring, voucherstring, othersstring, GSTRegistered);
 
